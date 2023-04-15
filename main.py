@@ -1,16 +1,26 @@
-# This is a sample Python script.
+import threading
+import time
+from threading import Thread
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+import settings
+from settings import *
+import pygame as pg
+from player import Player
 
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
-
-
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    print_hi('PyCharm')
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    pg.init()
+    screen = pg.display.set_mode((WIDTH, HEIGHT))
+    pg.display.set_caption(TITLE)
+    player = Player(WIDTH//2, HEIGHT - PLAYER_HEIGHT - 10, screen)
+    player.start()
+    while True:
+
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                settings.running = False
+                time.sleep(1)
+                pg.quit()
+                quit()
+        #print(threading.activeCount())
+
