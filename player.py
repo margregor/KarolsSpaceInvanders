@@ -8,7 +8,7 @@ import pygame as pg
 
 
 class Player(Thread):
-    def __init__(self, x, y, surface):
+    def __init__(self, x, y, surface, bullets):
         Thread.__init__(self)
         self.speed = PLAYER_SPEED
         self.width = PLAYER_WIDTH
@@ -17,8 +17,10 @@ class Player(Thread):
         self.y = y
         self.surface = surface
         self.color = PLAYER_COLOR
+        self.lives = 100
         self.living = True
         self.can_fire = True
+        self.bullets = bullets
 
     def run(self):
         while self.living and settings.running:
@@ -30,7 +32,7 @@ class Player(Thread):
     def update(self):
         #self.surface.fill((0, 0, 0))
         pg.draw.rect(self.surface, self.color, (self.x, self.y, self.width, self.height))
-        pg.display.update()
+        #pg.display.update()
 
     def move(self):
         #pg.draw.rect(self.surface, (0, 0, 0), (self.x, self.y, self.width, self.height))
@@ -42,13 +44,14 @@ class Player(Thread):
             self.fire()
 
     def fire(self):
-        bullet = Bullet(self.x + self.width//2 - BULLET_WIDTH//2, self.y - BULLET_HEIGHT, self.surface)
-        bullet.start()
+        Bullet(self.x + self.width//2 - BULLET_WIDTH//2, self.y - BULLET_HEIGHT, self.surface, self.bullets).start()
         self.can_fire = False
         Timer(BULLET_RATE_OF_FIRE, self.check_fire).start()
 
     def check_fire(self):
         self.can_fire = True
 
-    def kill(self):
-        self.living = False
+    def damage(self):
+        self.lives -= 1
+        if self.lives < 0:
+            self.living = False

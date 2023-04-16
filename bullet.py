@@ -7,7 +7,7 @@ import pygame as pg
 
 
 class Bullet(Thread):
-    def __init__(self, x, y, surface):
+    def __init__(self, x, y, surface, bullets):
         Thread.__init__(self)
         self.speed = BULLET_SPEED
         self.width = BULLET_WIDTH
@@ -17,6 +17,8 @@ class Bullet(Thread):
         self.surface = surface
         self.color = BULLET_COLOR
         self.living = True
+        self.bullets = bullets
+        self.bullets.append(self)
 
     def run(self):
         while self.living and settings.running:
@@ -29,11 +31,17 @@ class Bullet(Thread):
 
     def update(self):
         pg.draw.rect(self.surface, self.color, (self.x, self.y, self.width, self.height))
-        pg.display.update()
+        #pg.display.update()
 
     def move(self):
         self.y -= self.speed
 
     def check_life(self):
         if self.y + self.height < 0:
-            self.living = False
+            self.destroy()
+
+    def destroy(self):
+        pg.draw.rect(self.surface, BACKGROUND_COLOR, (self.x, self.y, self.width, self.height))
+        self.bullets.remove(self)
+        self.living = False
+
