@@ -27,7 +27,7 @@ class Enemy(Thread):
             #sleep(1)
             self.update()
             self.check_life()
-            sleep(0.04)
+            sleep(0.02)
 
     def update(self):
         pg.draw.rect(self.surface, self.color, (self.x, self.y, self.width, self.height))
@@ -35,7 +35,7 @@ class Enemy(Thread):
 
     def move(self):
         self.y += self.speed
-        self.x += random.randint(-10, 10)
+        self.x += self.speed//2 * random.choice([-1, 0, 1])
         if self.x + self.width > WIDTH:
             self.x = WIDTH - self.width
         elif self.x < 0:

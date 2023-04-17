@@ -25,6 +25,7 @@ class Collisions(Thread):
             if self.player.y < enemy.y + enemy.height and self.player.y + self.player.height > enemy.y \
                     and self.player.x < enemy.x + enemy.width and self.player.x + self.player.width > enemy.x:
                 enemy.kill()
+                self.score[0] += 1
                 self.player.damage()
 
     def enemies_player_bullets_collision(self):

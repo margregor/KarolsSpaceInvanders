@@ -40,15 +40,21 @@ class Player(Thread):
             self.x -= self.speed
         elif pg.key.get_pressed()[pg.K_RIGHT] and self.x < WIDTH - self.width:
             self.x += self.speed
+
+        if pg.key.get_pressed()[pg.K_UP] and self.y > 0:
+            self.y -= self.speed
+        elif pg.key.get_pressed()[pg.K_DOWN] and self.y < HEIGHT - self.height:
+            self.y += self.speed
+
         if pg.key.get_pressed()[pg.K_SPACE] and self.can_fire:
             self.fire()
 
     def fire(self):
         Bullet(self.x + self.width//2 - BULLET_WIDTH//2, self.y - BULLET_HEIGHT, self.surface, self.bullets).start()
         self.can_fire = False
-        Timer(BULLET_RATE_OF_FIRE, self.check_fire).start()
+        Timer(BULLET_RATE_OF_FIRE, self.cooled).start()
 
-    def check_fire(self):
+    def cooled(self):
         self.can_fire = True
 
     def damage(self):
