@@ -1,13 +1,14 @@
 import random
 from time import sleep
-from threading import Thread
-import settings
-from settings import *
+from threading import Thread, Lock
+from Threads import settings
+from Threads.bullet import Bullet
+from Threads.settings import *
 import pygame as pg
 
 
 class Enemy(Thread):
-    def __init__(self, x, y, surface, enemies):
+    def __init__(self, x, y, surface, enemies, bullets):
         Thread.__init__(self)
         self.speed = ENEMY_SPEED
         self.width = ENEMY_WIDTH
@@ -19,14 +20,19 @@ class Enemy(Thread):
         self.living = True
         self.enemies = enemies
         self.enemies.append(self)
+        self.lock = Lock()
+        self.bullets = bullets
 
     def run(self):
         while self.living and settings.running:
-            pg.draw.rect(self.surface, BACKGROUND_COLOR, (self.x, self.y, self.width, self.height))
-            self.move()
-            #sleep(1)
-            self.update()
-            self.check_life()
+            with self.lock:
+                pg.draw.rect(self.surface, BACKGROUND_COLOR, (self.x, self.y, self.width, self.height))
+                self.move()
+                self.update()
+                self.check_life()
+                if random.randint(1, 10) == 1:
+                    Bullet(self.x + self.width // 2 - BULLET_WIDTH // 2, self.y + self.height,
+                           self.surface, self.bullets, 1).start()
             sleep(0.02)
 
     def update(self):
@@ -47,5 +53,5 @@ class Enemy(Thread):
 
     def kill(self):
         pg.draw.rect(self.surface, BACKGROUND_COLOR, (self.x, self.y, self.width, self.height))
-        self.enemies.remove(self)
         self.living = False
+        self.enemies.remove(self)

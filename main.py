@@ -4,16 +4,17 @@ import time
 from threading import Timer
 import sys
 
-import settings
-from settings import *
+from Threads import settings
+from Threads.settings import *
 import pygame as pg
-from player import Player
-from enemy import Enemy
-from collisions import Collisions
+from Threads.player import Player
+from Threads.enemy import Enemy
+from Threads.collisions import Collisions
 
 score = [0]
 enemies = []
 bullets = []
+enemy_bullets = []
 
 
 def spawn_enemy(number):
@@ -21,7 +22,7 @@ def spawn_enemy(number):
         return
     for _ in range(random.randint(number // 2, int(number))):
         Enemy(WIDTH * random.random() % (WIDTH - ENEMY_WIDTH), -ENEMY_HEIGHT - random.randint(0, HEIGHT), screen,
-              enemies).start()
+              enemies, enemy_bullets).start()
     Timer(3, spawn_enemy, kwargs={"number": number + 0.5}).start()
 
 
@@ -57,10 +58,11 @@ if __name__ == '__main__':
     screen = pg.display.set_mode((WIDTH, HEIGHT))
     screen.fill(BACKGROUND_COLOR)
     pg.display.set_caption(TITLE)
+    lock_surface = threading.Lock()
     font = pg.font.SysFont(None, 40)
-    player = Player(WIDTH // 2, HEIGHT - PLAYER_HEIGHT - 10, screen, bullets)
+    player = Player(WIDTH // 2, HEIGHT - PLAYER_HEIGHT - 10, screen, bullets, lock_surface)
     player.start()
-    Collisions(score, player, bullets, enemies).start()
+    Collisions(score, player, bullets, enemies, enemy_bullets).start()
     spawn_enemy(10.0)
     # update_score()
     draw_score()
@@ -70,11 +72,19 @@ if __name__ == '__main__':
         # draw_score()
         # print(bullets)
         # print(enemies)
+
         pg.display.update()
-        print(threading.active_count())
+            #print(threading.active_count())
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 settings.running = False
                 time.sleep(1)
                 pg.quit()
                 sys.exit()
+
+        if not player.living:
+            screen.fill(BACKGROUND_COLOR)
+            settings.running = False
+            time.sleep(1)
+            pg.quit()
+            sys.exit()

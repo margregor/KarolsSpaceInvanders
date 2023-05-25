@@ -1,13 +1,13 @@
 from time import sleep
-from threading import Thread
+from threading import Thread, Lock
 
-import settings
-from settings import *
+from Threads import settings
+from Threads.settings import *
 import pygame as pg
 
 
 class Bullet(Thread):
-    def __init__(self, x, y, surface, bullets):
+    def __init__(self, x, y, surface, bullets, direction):
         Thread.__init__(self)
         self.speed = BULLET_SPEED
         self.width = BULLET_WIDTH
@@ -19,29 +19,31 @@ class Bullet(Thread):
         self.living = True
         self.bullets = bullets
         self.bullets.append(self)
+        self.lock = Lock()
+        self.direction = direction
 
     def run(self):
         while self.living and settings.running:
-            pg.draw.rect(self.surface, BACKGROUND_COLOR, (self.x, self.y, self.width, self.height))
-            self.move()
-            #sleep(1)
-            self.update()
-            self.check_life()
+            with self.lock:
+                pg.draw.rect(self.surface, BACKGROUND_COLOR, (self.x, self.y, self.width, self.height))
+                self.move()
+                self.update()
+                self.check_life()
+
             sleep(0.04)
 
     def update(self):
         pg.draw.rect(self.surface, self.color, (self.x, self.y, self.width, self.height))
-        #pg.display.update()
 
     def move(self):
-        self.y -= self.speed
+        self.y += self.direction * self.speed
 
     def check_life(self):
-        if self.y + self.height < 0:
+        if (self.y + self.height < 0 and self.direction == -1) or (self.y > HEIGHT and self.direction == 1):
             self.destroy()
 
     def destroy(self):
         pg.draw.rect(self.surface, BACKGROUND_COLOR, (self.x, self.y, self.width, self.height))
-        self.bullets.remove(self)
         self.living = False
+        self.bullets.remove(self)
 
