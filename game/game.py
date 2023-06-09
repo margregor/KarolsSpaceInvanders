@@ -67,7 +67,6 @@ class Game:
 
     def update_screen(self):
         """Function updating screen"""
-        #self.screen.fill(BACKGROUND_COLOR)
         self.screen.blit(self.background, (0, 0))
         for sprite in self.sprites:
             sprite.update()

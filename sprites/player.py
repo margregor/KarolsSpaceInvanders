@@ -35,7 +35,6 @@ class Player(Thread):
             with self.lock:
                 delta_time = self.clock.tick() / 1000
                 self.move(delta_time)
-
             sleep(SYNC)
 
     def update(self):

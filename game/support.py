@@ -15,5 +15,6 @@ def import_folder(path):
     return surface_list
 
 
+bullet_image = import_folder('./graphics/bullets')[0]
 enemies_images = import_folder('./graphics/enemy')
 player_images = import_folder('./graphics/player')

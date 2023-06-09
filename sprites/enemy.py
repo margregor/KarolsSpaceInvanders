@@ -43,13 +43,12 @@ class Enemy(Thread):
             sleep(SYNC)
 
     def update(self):
-        """Function drawing enemy rectangle"""
-        #pg.draw.rect(self.surface, self.color, (self.pos.x, self.pos.y, self.width, self.height))
+        """Function drawing enemy image"""
         with self.lock:
             self.surface.blit(self.image, self.rect)
 
     def move(self, delta):
-        """Function moving enemy rectangle"""
+        """Function moving enemy rectangle position"""
         self.pos.y += self.speed * delta
         self.pos.x += self.speed//2 * random.choice([-1, 0, 1]) * delta
         if self.pos.x + self.width > WIDTH:

@@ -4,6 +4,7 @@ from threading import Thread, Lock
 import pygame as pg
 
 from game.settings import BULLET_SPEED, BULLET_WIDTH, BULLET_HEIGHT, SYNC, HEIGHT
+from game.support import bullet_image
 
 
 class Bullet(Thread):
@@ -15,8 +16,8 @@ class Bullet(Thread):
         self.height = BULLET_HEIGHT
         self.pos = pg.Vector2(x, y)
         self.surface = surface
-        self.image = pg.image.load('./graphics/bullets/laserRed05.png').convert_alpha()
-        self.image = pg.transform.scale(self.image, (BULLET_WIDTH, BULLET_HEIGHT))
+        self.image = bullet_image
+        self.image = pg.transform.scale(self.image, (BULLET_WIDTH, BULLET_HEIGHT)).convert_alpha()
         self.rect = self.image.get_rect(topleft=self.pos)
         self.living = True
         self.bullets = bullets

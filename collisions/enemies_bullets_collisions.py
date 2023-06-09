@@ -1,6 +1,8 @@
 from threading import Thread
 from time import sleep
 
+from game.settings import SYNC
+
 
 class EnemiesBulletsCollisions(Thread):
     """Class checking player and enemies bullets collisions"""
@@ -19,4 +21,4 @@ class EnemiesBulletsCollisions(Thread):
                             and bullet.pos.x + bullet.width > self.player.pos.x:
                         bullet.kill()
                         self.player.damage()
-            sleep(0.01)
+            sleep(SYNC)
