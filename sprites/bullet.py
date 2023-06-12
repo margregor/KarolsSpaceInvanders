@@ -55,7 +55,7 @@ class Bullet(Thread):
 
     def kill(self):
         """Function killing thread"""
-        self.lock.locked()
         self.living = False
-        self.bullets.remove(self)
-        self.sprites.remove(self)
+        if self in self.bullets:
+            self.bullets.remove(self)
+            self.sprites.remove(self)

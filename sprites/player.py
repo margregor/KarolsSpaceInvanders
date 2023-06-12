@@ -25,6 +25,7 @@ class Player(Thread):
         self.can_fire = True
         self.bullets = bullets
         self.lock = Lock()
+        self.damage_lock = Lock()
         self.clock = pg.time.Clock()
         self.image = choice(player_images)
         self.image = pg.transform.scale(self.image, (PLAYER_WIDTH, PLAYER_HEIGHT)).convert_alpha()
@@ -60,7 +61,7 @@ class Player(Thread):
 
     def fire(self):
         """Function creating new bullet object"""
-        Bullet(self.pos.x + self.width//2 - BULLET_WIDTH//2, self.pos.y - BULLET_HEIGHT,
+        Bullet(self.pos.x + self.width//2 + BULLET_WIDTH // 4, self.pos.y - BULLET_HEIGHT,
                self.surface, self.sprites, self.bullets, -1).start()
         self.can_fire = False
         Timer(BULLET_RATE_OF_FIRE, self.cooled).start()
@@ -71,12 +72,12 @@ class Player(Thread):
 
     def damage(self):
         """Function lowering player life"""
-        self.lives -= 1
-        if self.lives <= 0:
-            self.kill()
+        with self.damage_lock:
+            self.lives -= 1
+            if self.lives <= 0:
+                self.kill()
 
     def kill(self):
         """Function killing player thread"""
-        self.lock.locked()
         self.living = False
         self.sprites.remove(self)

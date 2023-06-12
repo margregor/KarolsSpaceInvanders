@@ -1,6 +1,6 @@
 import random
 
-from threading import Timer
+from threading import Timer, Lock
 import pygame as pg
 
 from collisions.enemies_bullets_collisions import EnemiesBulletsCollisions
@@ -22,6 +22,7 @@ class Game:
         self.bullets = None
         self.enemy_bullets = None
         self.sprites = None
+        self.lock = Lock()
         self.screen = pg.display.set_mode((WIDTH, HEIGHT))
         self.font = pg.font.SysFont(None, 40)
         self.running = True
@@ -31,7 +32,7 @@ class Game:
 
     def new_game(self):
         """Function starting new game"""
-        self.score = [0]
+        self.score = 0
         self.enemies = []
         self.bullets = []
         self.enemy_bullets = []
@@ -39,8 +40,8 @@ class Game:
         self.player = Player(WIDTH // 2, HEIGHT - PLAYER_HEIGHT - 10, self.screen,
                              self.sprites, self.bullets)
         self.player.start()
-        PlayerEnemiesCollisions(self.score, self.player, self.enemies).start()
-        PlayerBulletsCollisions(self.score, self.bullets, self.enemies, self.player).start()
+        PlayerEnemiesCollisions(self.player, self.enemies, self.increment_score).start()
+        PlayerBulletsCollisions(self.bullets, self.enemies, self.player, self.increment_score).start()
         EnemiesBulletsCollisions(self.enemy_bullets, self.player).start()
         self.spawn_enemy(10.0)
 
@@ -57,7 +58,7 @@ class Game:
 
     def draw_score(self):
         """Function drawing score and player lives on screen"""
-        score_text = self.font.render("Score: " + str(self.score[0]), True, (255, 255, 255))
+        score_text = self.font.render("Score: " + str(self.score), True, (255, 255, 255))
         pg.draw.rect(self.screen, (150, 150, 150),
                      (10, 10, score_text.get_width() + 10, score_text.get_height()))
         life_text = self.font.render("Lives: " + str(self.player.lives), True, (255, 255, 255))
@@ -73,12 +74,17 @@ class Game:
         self.draw_score()
         pg.display.update()
 
+    def increment_score(self):
+        """Function incrementing variable score"""
+        with self.lock:
+            self.score += 1
+
     def game_over(self):
         """Function displaying game over screen and waiting for any key"""
         self.spawn_timer.cancel()
         font = pg.font.SysFont(None, 100)
         game_over_text = font.render("Game Over", True, (255, 255, 255))
-        score_text = font.render(f"Score: {self.score[0]}", True, (255, 255, 255))
+        score_text = font.render(f"Score: {self.score}", True, (255, 255, 255))
         waiting = True
         while waiting:
             self.screen.blit(self.background, (0, 0))

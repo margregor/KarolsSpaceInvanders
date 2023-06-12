@@ -6,11 +6,11 @@ from game.settings import SYNC
 
 class PlayerEnemiesCollisions(Thread):
     """Class checking player and enemies collisions"""
-    def __init__(self, score, player, enemies):
+    def __init__(self, player, enemies, update_score):
         Thread.__init__(self)
         self.player = player
         self.enemies = enemies
-        self.score = score
+        self.update_score = update_score
 
     def run(self):
         while self.player.living:
@@ -21,6 +21,6 @@ class PlayerEnemiesCollisions(Thread):
                             and self.player.pos.x < enemy.pos.x + enemy.width \
                             and self.player.pos.x + self.player.width > enemy.pos.x:
                         enemy.kill()
-                        self.score[0] += 1
+                        self.update_score()
                         self.player.damage()
             sleep(SYNC)

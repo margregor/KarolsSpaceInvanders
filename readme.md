@@ -24,8 +24,8 @@ python main.py
 
 ## Sekcje krytyczne
 - blokująca możliwość aktualizacji pozycji podczas sprawdzania kolizji(gracz-wróg, gracz-wrogi pocisk, wróg-pocisk gracza), typ muteks
-- blokująca możliwość kolizji jednego pocisku z dwoma wrogami jednocześnie, typ muteks
-
+- blokująca możliwość inkrementacji zmiennej score podczas kolizji(gracz-wróg, wróg-pocisk gracza), typ muteks
+- blokująca mozliwość dekrementacji żyć gracza podczas kolizji(gracz-wróg, gracz-wrogi pocisk), typ muteks
 ## Jak grać
 Klawisze służą starzałek do poruszania statkiem.
 Spacja do strzelania.
