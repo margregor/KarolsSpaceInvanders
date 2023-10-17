@@ -49,7 +49,7 @@ class Game:
         """Function spawning new enemies every 3 seconds"""
         if not self.player.living:
             return
-        for _ in range(random.randint(number // 2, int(number))):
+        for _ in range(random.randint(int(number / 2), int(number))):
             Enemy(WIDTH * random.random() % (WIDTH - ENEMY_WIDTH), -ENEMY_HEIGHT
                   - random.randint(0, HEIGHT), self.screen, self.sprites, self.enemies,
                   self.enemy_bullets).start()
